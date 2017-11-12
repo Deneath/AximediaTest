@@ -13,6 +13,8 @@ import javax.inject.Inject;
 import test.aximedia.app.aximediatest.base.BasePresenter;
 import test.aximedia.app.aximediatest.data.DataManager;
 import test.aximedia.app.aximediatest.data.Picture;
+import test.aximedia.app.aximediatest.helpers.FileManager;
+import test.aximedia.app.aximediatest.helpers.PhotoHelper;
 import test.aximedia.app.aximediatest.helpers.PickerDispatcher;
 
 public class MainPresenter extends BasePresenter<IMainView> {
@@ -28,7 +30,8 @@ public class MainPresenter extends BasePresenter<IMainView> {
 
     void init() {
         view.initViews();
-        dataManager.getPictures().subscribe(pictures -> view.showPhotos(pictures), throwable -> view.showMessage("Can't load photos"));
+        dataManager.getPictures().subscribe(pictures -> view.showPhotos(pictures),
+                throwable -> view.showMessage("Can't load photos"));
     }
 
     void onFloatingActionButtonClicked() {
@@ -37,36 +40,27 @@ public class MainPresenter extends BasePresenter<IMainView> {
 
     void onImagePicked(Uri imageUri) {
         String fileName = pickerDispatcher.getFilePath(imageUri);
+
         File file = new File(fileName);
         try {
             file.createNewFile();
             File newFile = pickerDispatcher.getPhotoFile();
-            copyFile(file, newFile);
+            FileManager.copyFile(file, newFile);
             Picture picture = new Picture(newFile.getPath());
-            dataManager.insertPicture(picture).subscribe(newPicture -> {
-                view.notifyItemInserted(newPicture);
-            });
+            dataManager.insertPicture(picture)
+                    .subscribe(this::notifyViewItemInserted,
+                            throwable -> view.showMessage("Can't add photo"));
         } catch (IOException e) {
             e.printStackTrace();
+            view.showMessage("Can't add photo");
         } catch (Exception e) {
             e.printStackTrace();
+            view.showMessage("Can't add photo");
         }
-
     }
 
-    private void copyFile(File sourceFile, File destFile) throws IOException {
-        if (!sourceFile.exists()) {
-            return;
-        }
-        FileChannel source;
-        FileChannel destination;
-        source = new FileInputStream(sourceFile).getChannel();
-        destination = new FileOutputStream(destFile).getChannel();
-        if (source != null) {
-            destination.transferFrom(source, 0, source.size());
-            source.close();
-        }
-        destination.close();
-
+    private void notifyViewItemInserted(Picture picture){
+        view.notifyItemInserted(picture);
     }
+
 }

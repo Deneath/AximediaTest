@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements IMainView {
 
     @Override
     public void showMessage(String s) {
-
+        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -99,7 +100,8 @@ public class MainActivity extends AppCompatActivity implements IMainView {
 
     @Override
     public void initViews() {
-        photosRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        photosRecyclerView.setHasFixedSize(true);
+        photosRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
     }
 

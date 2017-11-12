@@ -6,6 +6,7 @@ import android.content.Context;
 
 import dagger.Module;
 import dagger.Provides;
+import test.aximedia.app.aximediatest.helpers.FileManager;
 import test.aximedia.app.aximediatest.ui.photos.MainPresenter;
 import test.aximedia.app.aximediatest.data.DataManager;
 import test.aximedia.app.aximediatest.di.ActivityContext;
@@ -30,12 +31,6 @@ public class MainActivityModule {
     @Provides
     Activity provideActivity() {
         return mActivity;
-    }
-
-    //todo unused
-    @Provides
-    ContentResolver provideContentResolver(@ApplicationContext Context context){
-        return context.getContentResolver();
     }
 
     @Provides

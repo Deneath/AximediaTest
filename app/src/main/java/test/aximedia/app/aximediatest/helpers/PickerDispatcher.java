@@ -31,7 +31,9 @@ public class PickerDispatcher {
     public File getPhotoFile() {
         File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         try {
-            return File.createTempFile("Photo_" + new Timestamp(System.currentTimeMillis()) + "", ".jpg".replace(' ', '_'), externalFilesDir);
+            return File.createTempFile("Photo_"
+                    + new Timestamp(System.currentTimeMillis()).toString().replace(" ", "").replaceAll("[^\\d]", "")
+                    + "", ".jpg", externalFilesDir);
         } catch (IOException e) {
             e.printStackTrace();
         }
