@@ -25,7 +25,9 @@ public class PictureViewHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(Picture picture, IOnPictureActionsListener listener) {
+        if(!listener.isSelectModeEnabled()) checkImageView.setVisibility(View.GONE);
         pictureImageView.setOnLongClickListener(view -> {
+            checkImageView.setVisibility(View.GONE);
             if (listener.isSelectModeEnabled()) {
                 if (checkImageView.getVisibility() == View.GONE) {
                     checkImageView.setVisibility(View.VISIBLE);
@@ -66,6 +68,8 @@ public class PictureViewHolder extends RecyclerView.ViewHolder {
                 .override(imageSize)
                 .into(pictureImageView);
     }
+
+
 
     public interface IOnPictureActionsListener {
         void onPictureSelected(Picture picture);
