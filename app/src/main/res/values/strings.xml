@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AximediaTest</string>
+    <string name="viewHolderImageDescription">Thumbnail</string>
+</resources>
