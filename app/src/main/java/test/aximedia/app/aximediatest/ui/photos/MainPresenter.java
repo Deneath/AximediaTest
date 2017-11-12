@@ -3,10 +3,7 @@ package test.aximedia.app.aximediatest.ui.photos;
 import android.net.Uri;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 import javax.inject.Inject;
 
@@ -14,7 +11,6 @@ import test.aximedia.app.aximediatest.base.BasePresenter;
 import test.aximedia.app.aximediatest.data.DataManager;
 import test.aximedia.app.aximediatest.data.Picture;
 import test.aximedia.app.aximediatest.helpers.FileManager;
-import test.aximedia.app.aximediatest.helpers.PhotoHelper;
 import test.aximedia.app.aximediatest.helpers.PickerDispatcher;
 
 public class MainPresenter extends BasePresenter<IMainView> {

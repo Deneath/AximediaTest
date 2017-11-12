@@ -7,7 +7,6 @@ import javax.inject.Singleton;
 import dagger.Component;
 import test.aximedia.app.aximediatest.Application;
 import test.aximedia.app.aximediatest.data.DataManager;
-import test.aximedia.app.aximediatest.data.DbHelper;
 import test.aximedia.app.aximediatest.di.ApplicationContext;
 import test.aximedia.app.aximediatest.di.module.ApplicationModule;
 
@@ -20,6 +19,4 @@ public interface ApplicationComponent {
     Context getContext();
 
     DataManager getDataManager();
-
-    DbHelper getDbHelper();
 }
