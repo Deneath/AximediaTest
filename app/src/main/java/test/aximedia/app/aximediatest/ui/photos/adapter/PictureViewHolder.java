@@ -12,16 +12,48 @@ import test.aximedia.app.aximediatest.R;
 import test.aximedia.app.aximediatest.data.Picture;
 import test.aximedia.app.aximediatest.helpers.GlideApp;
 
-class PictureViewHolder extends RecyclerView.ViewHolder {
+public class PictureViewHolder extends RecyclerView.ViewHolder {
 
     private ImageView pictureImageView;
+    private ImageView checkImageView;
 
     PictureViewHolder(View itemView) {
         super(itemView);
         pictureImageView = itemView.findViewById(R.id.pictureImageView);
+        checkImageView = itemView.findViewById(R.id.checkImageView);
+        checkImageView.setVisibility(View.GONE);
     }
 
-    void bind(Picture picture) {
+    void bind(Picture picture, IOnPictureActionsListener listener) {
+        pictureImageView.setOnLongClickListener(view -> {
+            if (listener.isSelectModeEnabled()) {
+                if (checkImageView.getVisibility() == View.GONE) {
+                    checkImageView.setVisibility(View.VISIBLE);
+                    listener.onPictureSelected(picture);
+                } else {
+                    checkImageView.setVisibility(View.GONE);
+                    listener.onPictureDeselected(picture);
+                }
+            } else {
+                checkImageView.setVisibility(View.VISIBLE);
+                listener.onPictureSelected(picture);
+            }
+            return true;
+        });
+
+        pictureImageView.setOnClickListener(view -> {
+            if (listener.isSelectModeEnabled()) {
+                if (checkImageView.getVisibility() == View.GONE) {
+                    checkImageView.setVisibility(View.VISIBLE);
+                    listener.onPictureSelected(picture);
+                } else {
+                    checkImageView.setVisibility(View.GONE);
+                    listener.onPictureDeselected(picture);
+                }
+            } else
+                listener.openEditor(picture);
+        });
+
         WindowManager wm = (WindowManager) itemView.getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
@@ -33,5 +65,15 @@ class PictureViewHolder extends RecyclerView.ViewHolder {
                 .centerCrop()
                 .override(imageSize)
                 .into(pictureImageView);
+    }
+
+    public interface IOnPictureActionsListener {
+        void onPictureSelected(Picture picture);
+
+        void onPictureDeselected(Picture picture);
+
+        boolean isSelectModeEnabled();
+
+        void openEditor(Picture picture);
     }
 }

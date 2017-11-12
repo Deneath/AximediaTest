@@ -16,7 +16,7 @@ public class DataManager {
     private DbHelper mDbHelper;
 
     @Inject
-    public DataManager(DbHelper dbHelper) {
+    DataManager(DbHelper dbHelper) {
         mDbHelper = dbHelper;
     }
 
@@ -24,11 +24,15 @@ public class DataManager {
         return mDbHelper.insertPictureObservable(picture);
     }
 
-    public Observable<Picture> getUser(Long pictureId) throws Resources.NotFoundException, NullPointerException {
+    public Observable<Picture> getPicture(Long pictureId) throws Resources.NotFoundException, NullPointerException {
         return mDbHelper.getPictureObservable(pictureId);
     }
 
     public Observable<List<Picture>> getPictures() {
         return mDbHelper.getPicturesObservable();
+    }
+
+    public Observable<Boolean> removePictures(List<Picture> pictures) {
+        return mDbHelper.removePicturesObservable(pictures);
     }
 }

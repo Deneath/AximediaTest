@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import test.aximedia.app.aximediatest.di.ApplicationContext;
 import test.aximedia.app.aximediatest.di.DatabaseInfo;
@@ -65,7 +66,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return Observable.create(subscriber -> subscriber.onNext(func.call()));
     }
 
-    Observable<Picture> getPictureObservable(Long pictureId){
+    Observable<Picture> getPictureObservable(Long pictureId) {
         return makeObservable(getPicture(getReadableDatabase(), pictureId))
                 .subscribeOn(Schedulers.computation());
     }
@@ -101,7 +102,7 @@ public class DbHelper extends SQLiteOpenHelper {
         };
     }
 
-    Observable<List<Picture>> getPicturesObservable(){
+    Observable<List<Picture>> getPicturesObservable() {
         return makeObservable(getPictures(getReadableDatabase()))
                 .subscribeOn(Schedulers.computation());
     }
@@ -156,5 +157,27 @@ public class DbHelper extends SQLiteOpenHelper {
             }
         };
 
+    }
+
+    Observable<Boolean> removePicturesObservable(List<Picture> pictures) {
+        return makeObservable(removePictures(pictures)).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Callable<Boolean> removePictures(List<Picture> pictures) {
+        return () -> {
+            try {
+                SQLiteDatabase db = this.getWritableDatabase();
+                for (Picture picture : pictures) {
+                    db.delete(PICTURE_TABLE_NAME,
+                            PICTURE_COLUMN_PICTURE_ID + "=" + picture.getId(),
+                            null);
+                }
+                return true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        };
     }
 }

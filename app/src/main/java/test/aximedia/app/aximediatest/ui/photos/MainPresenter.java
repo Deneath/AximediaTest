@@ -4,6 +4,8 @@ import android.net.Uri;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -17,6 +19,8 @@ public class MainPresenter extends BasePresenter<IMainView> {
 
     private PickerDispatcher pickerDispatcher;
     private DataManager dataManager;
+    private boolean isSelectModeEnabled;
+    private List<Picture> selectedPictures = new ArrayList<>();
 
     @Inject
     public MainPresenter(PickerDispatcher pickerDispatcher, DataManager dataManager) {
@@ -55,8 +59,43 @@ public class MainPresenter extends BasePresenter<IMainView> {
         }
     }
 
-    private void notifyViewItemInserted(Picture picture){
+    private void notifyViewItemInserted(Picture picture) {
         view.notifyItemInserted(picture);
     }
 
+    void onPictureSelected(Picture picture) {
+        if (selectedPictures.size() == 0) {
+            setSelectModeEnabled(true);
+        }
+        selectedPictures.add(picture);
+    }
+
+    void onPictureDeselected(Picture picture) {
+        selectedPictures.remove(picture);
+        if (selectedPictures.size() == 0) {
+            setSelectModeEnabled(false);
+        }
+    }
+
+    boolean isSelectModeEnabled() {
+        return isSelectModeEnabled;
+    }
+
+    private void setSelectModeEnabled(boolean isEnabled){
+        isSelectModeEnabled = isEnabled;
+        view.setRemoveButtonVisibility(isEnabled);
+    }
+
+    void removeButtonClicked() {
+        dataManager.removePictures(selectedPictures).subscribe(aBoolean -> {
+            if(!aBoolean){
+                view.showMessage("Cannot remove pictures");
+            }
+            for(Picture picture : selectedPictures){
+                view.notifyItemRemoved(picture);
+            }
+            selectedPictures.clear();
+            setSelectModeEnabled(false);
+        }, throwable -> view.showMessage("Cannot remove pictures"));
+    }
 }

@@ -13,9 +13,11 @@ import test.aximedia.app.aximediatest.data.Picture;
 public class PictureAdapter extends RecyclerView.Adapter<PictureViewHolder> {
 
     private List<Picture> pictures;
+    private PictureViewHolder.IOnPictureActionsListener listener;
 
-    public PictureAdapter(List<Picture> pictures) {
+    public PictureAdapter(List<Picture> pictures, PictureViewHolder.IOnPictureActionsListener listener) {
         this.pictures = pictures;
+        this.listener = listener;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureViewHolder> {
 
     @Override
     public void onBindViewHolder(PictureViewHolder holder, int position) {
-        holder.bind(pictures.get(position));
+        holder.bind(pictures.get(position), listener);
     }
 
     @Override
@@ -37,5 +39,11 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureViewHolder> {
     public void addItem(Picture picture) {
         pictures.add(picture);
         notifyItemInserted(pictures.size() - 1);
+    }
+
+    public void removeItem(Picture picture) {
+        int position = pictures.indexOf(picture);
+        pictures.remove(picture);
+        notifyItemRemoved(position);
     }
 }

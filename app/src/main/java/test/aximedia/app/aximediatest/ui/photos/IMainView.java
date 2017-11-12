@@ -13,4 +13,8 @@ public interface IMainView extends IView {
     void initViews();
 
     void showPhotos(List<Picture> pictures);
+
+    void setRemoveButtonVisibility(boolean isVisible);
+
+    void notifyItemRemoved(Picture picture);
 }
