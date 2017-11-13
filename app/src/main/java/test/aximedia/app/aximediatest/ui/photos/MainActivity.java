@@ -31,6 +31,7 @@ import test.aximedia.app.aximediatest.di.component.DaggerMainActivityComponent;
 import test.aximedia.app.aximediatest.di.component.MainActivityComponent;
 import test.aximedia.app.aximediatest.di.module.MainActivityModule;
 import test.aximedia.app.aximediatest.helpers.PickerDispatcher;
+import test.aximedia.app.aximediatest.ui.editor.EditorActivity;
 import test.aximedia.app.aximediatest.ui.photos.adapter.PictureAdapter;
 import test.aximedia.app.aximediatest.ui.photos.adapter.PictureViewHolder;
 
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements IMainView, Pictur
 
     private static final int PHOTOPICKER_REQUEST_CODE = 101;
     private static final int READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 401;
+    private static final int EDITOR_REQUEST_CODE = 102;
 
     @BindView(R.id.photosRecyclerView)
     RecyclerView photosRecyclerView;
@@ -209,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements IMainView, Pictur
 
     @Override
     public void openEditor(Picture picture) {
-
+        Intent intent = EditorActivity.buildIntent(this, picture.getPath());
+        startActivityForResult(intent, EDITOR_REQUEST_CODE);
     }
 }
