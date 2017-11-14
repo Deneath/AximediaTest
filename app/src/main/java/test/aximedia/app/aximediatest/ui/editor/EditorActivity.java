@@ -96,10 +96,10 @@ public class EditorActivity extends AppCompatActivity implements IEditorView {
     class DrawView extends View {
         private RectF bitmapRect;
         private Bitmap source;
-        private RectF rect;
-        private Canvas canvas;
         private Paint paint;
+
         private List<RectF> rects;
+        private RectF rect;
         private PointF startPoint;
 
         public DrawView(Context context, Bitmap bitmap) {
@@ -123,14 +123,10 @@ public class EditorActivity extends AppCompatActivity implements IEditorView {
                     startPoint = new PointF(x, y);
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if(x < rect.left){
-                        rect.set(x, rect.top, startPoint.x, startPoint.y);
-                    }
-                    if(y < rect.top ) {
-                        rect.set(rect.left, rect.top, startPoint.x, startPoint.y);
-                    }
-                    if(x > rect.left || y > rect.top)
-                        rect.set(startPoint.x, startPoint.y, x, y);
+                    rect.set(x < startPoint.x ? x : startPoint.x,
+                            y < startPoint.y ? y : startPoint.y,
+                            x > startPoint.x ? x : startPoint.x,
+                            y > startPoint.y ? y : startPoint.y);
                     break;
                 case MotionEvent.ACTION_UP:
                     rects.add(new RectF(rect));
@@ -142,10 +138,9 @@ public class EditorActivity extends AppCompatActivity implements IEditorView {
         }
 
         protected void onDraw(Canvas canvas) {
-            this.canvas = canvas;
             applyBitmapToCanvas(canvas);
             canvas.drawRect(rect, paint);
-            for(RectF rect : rects)
+            for (RectF rect : rects)
                 canvas.drawRect(rect, paint);
         }
 
