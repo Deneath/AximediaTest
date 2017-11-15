@@ -78,6 +78,10 @@ public class MainActivity extends AppCompatActivity implements IMainView, Pictur
                     final Uri imageUri = data.getData();
                     presenter.onImagePicked(imageUri);
                 }
+                break;
+            case EDITOR_REQUEST_CODE:
+                adapter.notifyDataSetChanged();
+                break;
         }
     }
 

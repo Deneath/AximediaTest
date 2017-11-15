@@ -1,26 +1,24 @@
 package test.aximedia.app.aximediatest.ui.editor;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.PointF;
-import android.graphics.Rect;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.View;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
-import java.util.ArrayList;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,8 +30,8 @@ import test.aximedia.app.aximediatest.R;
 import test.aximedia.app.aximediatest.di.component.DaggerEditorActivityComponent;
 import test.aximedia.app.aximediatest.di.component.EditorActivityComponent;
 import test.aximedia.app.aximediatest.di.module.EditorActivityModule;
-import test.aximedia.app.aximediatest.helpers.PictureHelper;
-import test.aximedia.app.aximediatest.helpers.PictureOrientation;
+import test.aximedia.app.aximediatest.helpers.DrawView;
+import test.aximedia.app.aximediatest.helpers.GlideApp;
 
 public class EditorActivity extends AppCompatActivity implements IEditorView {
 
@@ -42,6 +40,10 @@ public class EditorActivity extends AppCompatActivity implements IEditorView {
 
     @BindView(R.id.containerLayout)
     FrameLayout containerLayout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.drawView)
+    DrawView drawView;
 
     @Inject
     EditorPresenter presenter;
@@ -62,6 +64,27 @@ public class EditorActivity extends AppCompatActivity implements IEditorView {
         presenter.setView(this);
         presenter.init(getIntent().getStringExtra(PICTURE_PATH_TAG));
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.editor_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.saveMenuItem) {
+
+            Bitmap cache = drawView.getDrawingCache();
+            presenter.saveImage(drawView.getBitmap());
+            return true;
+        } else if(item.getItemId() == R.id.cancelMenuItem){
+            presenter.undoButtonCLicked();
+        } else if(item.getItemId() == android.R.id.home){
+            presenter.backClicked();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public EditorActivityComponent getActivityComponent() {
@@ -85,96 +108,35 @@ public class EditorActivity extends AppCompatActivity implements IEditorView {
     }
 
     @Override
-    public void showCanvas(Bitmap bitmap) {
-        DrawView view = new DrawView(this, bitmap);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        layoutParams.gravity = Gravity.CENTER;
-        view.setDrawingCacheEnabled(true);
-        containerLayout.addView(view, layoutParams);
+    public void showImage(String path) {
+        GlideApp.with(this).load(path).into(drawView);
     }
 
-    class DrawView extends View {
-        private RectF bitmapRect;
-        private Bitmap source;
-        private Paint paint;
-
-        private List<RectF> rects;
-        private RectF rect;
-        private PointF startPoint;
-
-        public DrawView(Context context, Bitmap bitmap) {
-            super(context);
-            source = bitmap;
-            bitmapRect = new RectF();
-            rect = new RectF();
-            paint = new Paint();
-            paint.setARGB(180, 255, 0, 0);
-            rects = new ArrayList<>();
+    @Override
+    public void initViews() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+        drawView.setDrawingCacheEnabled(true);
+    }
 
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            float x = event.getX();
-            float y = event.getY();
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    rect.set(x, y, x, y);
-                    startPoint = new PointF(x, y);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    rect.set(x < startPoint.x ? x : startPoint.x,
-                            y < startPoint.y ? y : startPoint.y,
-                            x > startPoint.x ? x : startPoint.x,
-                            y > startPoint.y ? y : startPoint.y);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    rects.add(new RectF(rect));
-                    rect.setEmpty();
-                    break;
-            }
-            invalidate();
-            return true;
-        }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        List<RectF> rects = drawView.getRects();
+        String json = new Gson().toJson(rects);
+        outState.putString("rects", json);
+    }
 
-        protected void onDraw(Canvas canvas) {
-            applyBitmapToCanvas(canvas);
-            canvas.drawRect(rect, paint);
-            for (RectF rect : rects)
-                canvas.drawRect(rect, paint);
-        }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
-        private void applyBitmapToCanvas(Canvas canvas) {
-            int maxSideSize = PictureHelper.getPictureOrientation(source) == PictureOrientation.Portrait ?
-                    canvas.getHeight() :
-                    canvas.getWidth();
-            int width = source.getWidth();
-            int height = source.getHeight();
-            float ratioBitmap = width / (float) height;
+        Type type = new TypeToken<List<RectF>>() {}.getType();
+        List<RectF> rects = new Gson().fromJson(savedInstanceState.getString("rects"), type);
+        drawView.setRects(rects);
 
-            int finalWidth;
-            int finalHeight;
-            if (ratioBitmap > 1) {
-                finalWidth = maxSideSize;
-                finalHeight = height * maxSideSize / width;
-            } else {
-                finalHeight = maxSideSize;
-                finalWidth = width * maxSideSize / height;
-            }
-
-            if (PictureHelper.getPictureOrientation(source) == PictureOrientation.Landscape) {
-                bitmapRect.set(0, (canvas.getHeight() / 2) - (finalHeight / 2),
-                        canvas.getWidth(), canvas.getHeight() - (canvas.getHeight() / 2) + (finalHeight / 2));
-
-            } else if (PictureHelper.getPictureOrientation(source) == PictureOrientation.Portrait) {
-                bitmapRect.set((canvas.getWidth() / 2) - (finalWidth / 2), 0,
-                        canvas.getWidth() - (canvas.getWidth() / 2) + (finalWidth / 2), canvas.getHeight());
-
-            }
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(finalWidth, finalHeight);
-            layoutParams.gravity = Gravity.CENTER;
-            setLayoutParams(layoutParams);
-            canvas.drawBitmap(source, null, bitmapRect, null);
-        }
     }
 }

@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     android:gravity="start"
-    app:titleTextColor="@android:color/white" />
+    app:titleTextColor="@android:color/white"
+    app:theme="@style/ToolbarColoredBackArrow"/>

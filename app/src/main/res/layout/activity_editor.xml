@@ -14,7 +14,13 @@
             android:layout_height="5dp"
             android:background="@drawable/toolbar_shadow"/>
 
-
+<test.aximedia.app.aximediatest.helpers.DrawView
+    android:id="@+id/drawView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:adjustViewBounds="true"
+    />
 
     </FrameLayout>
 

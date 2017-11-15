@@ -93,6 +93,8 @@ public class MainPresenter extends BasePresenter<IMainView> {
             }
             for(Picture picture : selectedPictures){
                 view.notifyItemRemoved(picture);
+                File file = new File(picture.getPath());
+                boolean deleted = file.delete();
             }
             selectedPictures.clear();
             setSelectModeEnabled(false);

@@ -3,4 +3,6 @@
     <string name="viewHolderImageDescription">Thumbnail</string>
     <string name="check_picture">check picture</string>
     <string name="remove">Remove</string>
+    <string name="save">Save</string>
+    <string name="clear">clear</string>
 </resources>
