@@ -7,11 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,16 +23,15 @@ public class DrawView extends View {
     private RectF rect;
     private PointF startPoint;
     private Bitmap source;
-    private Canvas canvas;
 
-    public Bitmap getBitmap(){
+    public Bitmap getBitmap() {
         Canvas c = new Canvas(source);
         for (RectF rect : rects)
             c.drawRect(rect, paint);
         return source;
     }
 
-    public DrawView(Context context, AttributeSet attrs){
+    public DrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         rect = new RectF();
@@ -53,26 +48,13 @@ public class DrawView extends View {
         rects = new ArrayList<>();
     }
 
-
-
-    public void setBitmap(Bitmap bitmap, int screenWidth, int screenHeight){
-
+    public void setBitmap(Bitmap bitmap, int screenWidth, int screenHeight) {
         source = PhotoHelper.resizeBitmap(bitmap, bitmap.getHeight() > bitmap.getWidth() ?
-                screenHeight - 81:
+                screenHeight - 81 :
                 screenWidth);
-//        canvas = new Canvas(source);
-//        draw(canvas);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(source.getWidth(), source.getHeight());
         params.gravity = Gravity.CENTER;
         setLayoutParams(params);
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-//        source = PhotoHelper.resizeBitmap(source, source.getHeight() > source.getWidth() ?
-//                Math.max(w, h) :
-//                Math.min(w, h));
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -101,36 +83,32 @@ public class DrawView extends View {
     }
 
     protected void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
-        canvas.drawBitmap(source, 0,0, null);
+        canvas.drawBitmap(source, 0, 0, null);
         canvas.drawRect(rect, paint);
         for (RectF rect : rects)
             canvas.drawRect(rect, paint);
     }
 
-    public List<RectF> getRects(){
+    public List<RectF> getRects() {
         return rects;
     }
 
-    public void setRects(List<RectF> rects, float oldWidth, float oldHeight){
+    public void setRects(List<RectF> rects, float oldWidth, float oldHeight) {
         float newWidth = source.getWidth();
         float newHeight = source.getHeight();
-        if(newWidth > oldWidth && newHeight > oldHeight){
+        if (newWidth > oldWidth && newHeight > oldHeight) {
             float widthDx = newWidth / oldWidth;
             float heightDx = newHeight / oldHeight;
-            for(RectF rect : rects){
+            for (RectF rect : rects) {
                 rect.set(rect.left * widthDx, rect.top * heightDx, rect.right * widthDx, rect.bottom * heightDx);
             }
-        } else if(newWidth < oldWidth && newHeight < oldHeight){
+        } else if (newWidth < oldWidth && newHeight < oldHeight) {
             float widthDx = oldWidth / newWidth;
             float heightDx = oldHeight / newHeight;
-            for(RectF rect : rects){
+            for (RectF rect : rects) {
                 rect.set(rect.left / widthDx, rect.top / heightDx, rect.right / widthDx, rect.bottom / heightDx);
             }
         }
-
         this.rects = rects;
     }
-
-
 }

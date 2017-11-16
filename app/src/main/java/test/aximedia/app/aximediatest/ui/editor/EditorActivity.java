@@ -73,9 +73,9 @@ public class EditorActivity extends AppCompatActivity implements IEditorView {
             Bitmap bitmap = drawView.getBitmap();
             presenter.saveImage(bitmap);
             return true;
-        } else if(item.getItemId() == R.id.cancelMenuItem){
+        } else if (item.getItemId() == R.id.cancelMenuItem) {
             presenter.undoButtonCLicked();
-        } else if(item.getItemId() == android.R.id.home){
+        } else if (item.getItemId() == android.R.id.home) {
             presenter.backClicked();
         }
         return super.onOptionsItemSelected(item);

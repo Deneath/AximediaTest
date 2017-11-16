@@ -156,7 +156,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 throw e;
             }
         };
-
     }
 
     Observable<Boolean> removePicturesObservable(List<Picture> pictures) {

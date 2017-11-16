@@ -1,18 +1,14 @@
 package test.aximedia.app.aximediatest.helpers;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Timestamp;
 
 import javax.inject.Inject;
@@ -32,18 +28,6 @@ public class PickerDispatcher {
         File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         try {
             return File.createTempFile("Photo_"
-                    + new Timestamp(System.currentTimeMillis()).toString().replace(" ", "").replaceAll("[^\\d]", "")
-                    + "", ".jpg", externalFilesDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public File getEditedPhotoFile() {
-        File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        try {
-            return File.createTempFile("EditedPhoto_"
                     + new Timestamp(System.currentTimeMillis()).toString().replace(" ", "").replaceAll("[^\\d]", "")
                     + "", ".jpg", externalFilesDir);
         } catch (IOException e) {

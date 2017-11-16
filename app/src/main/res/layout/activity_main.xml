@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-<View
-    android:layout_width="match_parent"
-    android:layout_height="5dp"
-    android:background="@drawable/toolbar_shadow"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/toolbar_shadow" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/photosRecyclerView"
@@ -28,13 +29,13 @@
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:src="@drawable/ic_image_white_24dp"
+            app:fab_shadowColor="@color/fabShadow"
+            app:fab_showShadow="true"
             fab:fab_colorNormal="@color/colorAccent"
             fab:fab_colorPressed="@color/colorAccentDark"
-            fab:fab_colorRipple="@color/colorAccentVeryDark"
-            app:fab_showShadow="true"
-            app:fab_shadowColor="@color/fabShadow"
-            android:layout_marginRight="8dp" />
+            fab:fab_colorRipple="@color/colorAccentVeryDark" />
 
     </FrameLayout>
 </LinearLayout>

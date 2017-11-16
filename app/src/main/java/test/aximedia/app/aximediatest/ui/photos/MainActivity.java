@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements IMainView, Pictur
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    MenuItem removeMenuItem;
+    private MenuItem removeMenuItem;
 
     @Inject
     MainPresenter presenter;

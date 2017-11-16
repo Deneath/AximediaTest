@@ -30,7 +30,7 @@ public class EditorPresenter extends BasePresenter<IEditorView> {
         this.picturePath = picturePath;
         this.picturePosition = picturePosition;
         view.initViews();
-        Bitmap bitmap = PhotoHelper.resizeBitmap(PhotoHelper.getBitmapFromPath(picturePath), 1920);
+        Bitmap bitmap = PhotoHelper.resizeBitmap(FileManager.getBitmapFromPath(picturePath), 1920);
         view.showImage(bitmap);
     }
 
@@ -47,7 +47,7 @@ public class EditorPresenter extends BasePresenter<IEditorView> {
         finishView();
     }
 
-    private void finishView(){
+    private void finishView() {
         Intent intent = new Intent();
         intent.putExtra("position", picturePosition);
         view.setResult(-1, intent);
@@ -62,7 +62,8 @@ public class EditorPresenter extends BasePresenter<IEditorView> {
     }
 
     void onRestoreInstanceState(Bundle savedInstanceState) {
-        Type type = new TypeToken<List<RectF>>() {}.getType();
+        Type type = new TypeToken<List<RectF>>() {
+        }.getType();
         List<RectF> rects = new Gson().fromJson(savedInstanceState.getString("rects"), type);
         int oldWidth = savedInstanceState.getInt("oldWidth");
         int oldHeight = savedInstanceState.getInt("oldHeight");

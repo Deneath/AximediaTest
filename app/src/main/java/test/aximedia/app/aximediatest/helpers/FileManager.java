@@ -1,6 +1,7 @@
 package test.aximedia.app.aximediatest.helpers;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.File;
@@ -38,5 +39,9 @@ public class FileManager {
         } catch (IOException e) {
             Log.d(TAG, "Error accessing file: " + e.getMessage());
         }
+    }
+
+    public static Bitmap getBitmapFromPath(String path) {
+        return BitmapFactory.decodeFile(path);
     }
 }
