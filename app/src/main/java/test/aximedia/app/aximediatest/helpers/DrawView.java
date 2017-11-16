@@ -7,29 +7,32 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DrawView extends android.support.v7.widget.AppCompatImageView {
+public class DrawView extends View {
 
     private Paint paint;
     private List<RectF> rects;
     private RectF rect;
     private PointF startPoint;
     private Bitmap source;
+    private Canvas canvas;
 
     public Bitmap getBitmap(){
+        Canvas c = new Canvas(source);
+        for (RectF rect : rects)
+            c.drawRect(rect, paint);
         return source;
     }
 
@@ -48,6 +51,28 @@ public class DrawView extends android.support.v7.widget.AppCompatImageView {
         paint = new Paint();
         paint.setARGB(180, 255, 0, 0);
         rects = new ArrayList<>();
+    }
+
+
+
+    public void setBitmap(Bitmap bitmap, int screenWidth, int screenHeight){
+
+        source = PhotoHelper.resizeBitmap(bitmap, bitmap.getHeight() > bitmap.getWidth() ?
+                screenHeight - 81:
+                screenWidth);
+//        canvas = new Canvas(source);
+//        draw(canvas);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(source.getWidth(), source.getHeight());
+        params.gravity = Gravity.CENTER;
+        setLayoutParams(params);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+//        source = PhotoHelper.resizeBitmap(source, source.getHeight() > source.getWidth() ?
+//                Math.max(w, h) :
+//                Math.min(w, h));
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -76,30 +101,34 @@ public class DrawView extends android.support.v7.widget.AppCompatImageView {
     }
 
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        //super.onDraw(canvas);
+        canvas.drawBitmap(source, 0,0, null);
         canvas.drawRect(rect, paint);
         for (RectF rect : rects)
             canvas.drawRect(rect, paint);
-        canvas.save();
-    }
-
-    @Override
-    public void setImageDrawable(@Nullable Drawable drawable) {
-        super.setImageDrawable(drawable);
-        if(drawable == null) return;
-
-        BitmapDrawable bd = (BitmapDrawable) drawable;
-        Bitmap bitmap = bd.getBitmap();
-        source = bitmap.copy(bitmap.getConfig(), true);
-        Canvas canvas = new Canvas(source);
-        draw(canvas);
     }
 
     public List<RectF> getRects(){
         return rects;
     }
 
-    public void setRects(List<RectF> rects){
+    public void setRects(List<RectF> rects, float oldWidth, float oldHeight){
+        float newWidth = source.getWidth();
+        float newHeight = source.getHeight();
+        if(newWidth > oldWidth && newHeight > oldHeight){
+            float widthDx = newWidth / oldWidth;
+            float heightDx = newHeight / oldHeight;
+            for(RectF rect : rects){
+                rect.set(rect.left * widthDx, rect.top * heightDx, rect.right * widthDx, rect.bottom * heightDx);
+            }
+        } else if(newWidth < oldWidth && newHeight < oldHeight){
+            float widthDx = oldWidth / newWidth;
+            float heightDx = oldHeight / newHeight;
+            for(RectF rect : rects){
+                rect.set(rect.left / widthDx, rect.top / heightDx, rect.right / widthDx, rect.bottom / heightDx);
+            }
+        }
+
         this.rects = rects;
     }
 

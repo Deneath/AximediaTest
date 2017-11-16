@@ -40,6 +40,18 @@ public class PickerDispatcher {
         return null;
     }
 
+    public File getEditedPhotoFile() {
+        File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        try {
+            return File.createTempFile("EditedPhoto_"
+                    + new Timestamp(System.currentTimeMillis()).toString().replace(" ", "").replaceAll("[^\\d]", "")
+                    + "", ".jpg", externalFilesDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Intent getImagePickerIntent() {
         Intent intent = new Intent();
         intent.setType("image/*");

@@ -46,4 +46,8 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureViewHolder> {
         pictures.remove(picture);
         notifyItemRemoved(position);
     }
+
+    public void itemChanged(int position) {
+        notifyItemChanged(position);
+    }
 }

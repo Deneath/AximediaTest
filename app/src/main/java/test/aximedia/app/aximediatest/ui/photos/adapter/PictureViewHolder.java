@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import test.aximedia.app.aximediatest.R;
 import test.aximedia.app.aximediatest.data.Picture;
 import test.aximedia.app.aximediatest.helpers.GlideApp;
@@ -26,6 +28,7 @@ public class PictureViewHolder extends RecyclerView.ViewHolder {
 
     void bind(Picture picture, IOnPictureActionsListener listener) {
         if(!listener.isSelectModeEnabled()) checkImageView.setVisibility(View.GONE);
+
         pictureImageView.setOnLongClickListener(view -> {
             checkImageView.setVisibility(View.GONE);
             if (listener.isSelectModeEnabled()) {
@@ -53,7 +56,7 @@ public class PictureViewHolder extends RecyclerView.ViewHolder {
                     listener.onPictureDeselected(picture);
                 }
             } else
-                listener.openEditor(picture);
+                listener.openEditor(picture, getAdapterPosition());
         });
 
         WindowManager wm = (WindowManager) itemView.getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -64,12 +67,12 @@ public class PictureViewHolder extends RecyclerView.ViewHolder {
         int imageSize = width / 3;
         GlideApp.with(itemView.getContext())
                 .load(picture.getPath())
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .centerCrop()
                 .override(imageSize)
                 .into(pictureImageView);
     }
-
-
 
     public interface IOnPictureActionsListener {
         void onPictureSelected(Picture picture);
@@ -78,6 +81,6 @@ public class PictureViewHolder extends RecyclerView.ViewHolder {
 
         boolean isSelectModeEnabled();
 
-        void openEditor(Picture picture);
+        void openEditor(Picture picture, int position);
     }
 }

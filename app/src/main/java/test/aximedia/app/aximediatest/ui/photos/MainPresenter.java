@@ -1,6 +1,9 @@
 package test.aximedia.app.aximediatest.ui.photos;
 
+import android.content.Intent;
 import android.net.Uri;
+
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;

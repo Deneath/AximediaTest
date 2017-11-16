@@ -80,7 +80,9 @@ public class MainActivity extends AppCompatActivity implements IMainView, Pictur
                 }
                 break;
             case EDITOR_REQUEST_CODE:
-                adapter.notifyDataSetChanged();
+                if (resultCode == RESULT_OK) {
+                    adapter.itemChanged(data.getIntExtra("position", 1));
+                }
                 break;
         }
     }
@@ -130,11 +132,6 @@ public class MainActivity extends AppCompatActivity implements IMainView, Pictur
     @OnClick(R.id.fab)
     void fabClicked() {
         presenter.onFloatingActionButtonClicked();
-    }
-
-    @Override
-    public void showLoading() {
-
     }
 
     @Override
@@ -214,8 +211,8 @@ public class MainActivity extends AppCompatActivity implements IMainView, Pictur
     }
 
     @Override
-    public void openEditor(Picture picture) {
-        Intent intent = EditorActivity.buildIntent(this, picture.getPath());
+    public void openEditor(Picture picture, int position) {
+        Intent intent = EditorActivity.buildIntent(this, picture.getPath(), position);
         startActivityForResult(intent, EDITOR_REQUEST_CODE);
     }
 }
